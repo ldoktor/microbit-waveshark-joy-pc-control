@@ -11,6 +11,7 @@ inputs = [DigitalPin.P5,
 status = [0, 0, 0, 0, 0, 0, 0]
 
 def on_forever():
+    # Buttons handling
     for i in range(7):
         if pins.digital_read_pin(inputs[i]) == status[i]:
             if status[i]:
@@ -22,9 +23,12 @@ def on_forever():
 basic.forever(on_forever)
 
 def on_forever2():
+    # Joystick handling
+    # My Joystick has offset of +10 on x axis
     serial.write_value("x",
-        Math.map(pins.analog_read_pin(AnalogPin.P1), 0, 1024, -1024, 1024))
+        Math.map(pins.analog_read_pin(AnalogPin.P1), 0, 1024, -1024, 1024) - 10)
+    # My Joystick has offset of -4 on y axis
     serial.write_value("y",
-        Math.map(pins.analog_read_pin(AnalogPin.P2), 1024, 0, -1024, 1024))
+        Math.map(pins.analog_read_pin(AnalogPin.P2), 1024, 0, -1024, 1024) + 4)
     basic.pause(10)
 basic.forever(on_forever2)
