@@ -9,9 +9,9 @@ status = [0, 0, 0, 0, 0, 0, 0]
 while True:
     # Joystick
     # x has offset of 24 on my joystick
-    print("x:%s" % (pin1.read_analog() * 2 - 1048))
     # y has offset of 2 on my joystick
-    print("y:%s" % (pin2.read_analog() * -2 + 1026))
+    print("xy:%s;%s" % ((pin1.read_analog() * 2 - 1048),
+                        (pin2.read_analog() * -2 + 1026))
     # Keys
     for i in range(7):
         if pins[i].read_digital() == status[i]:

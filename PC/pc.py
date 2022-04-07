@@ -22,6 +22,9 @@ keyboard = pynput.keyboard.Controller()
 # You can modify the event-key mapping here
 keyboard_mapping = {"P": Key.space, "E": 'w', "C": 's', "F": 'a', "D": 'd'}
 
+offsetx = None
+offsety = None
+
 with serial.Serial(serial_port, 115200) as port:
     while True:
         # Until infinity read lines and act
@@ -34,6 +37,13 @@ with serial.Serial(serial_port, 115200) as port:
             if len(line) != 2:
                 continue
             option, value = line
+            # mouse - combined
+            if option == "xy":
+                x, y = value.split(';')
+                if offsety == None:
+                    offsetx = float(x) / 60
+                    offsety = float(y) / 60
+                mouse.move(float(x) / 60 - offsetx, float(y) / 60 - offsety)
             # mouse x
             if option == "x":
                 mouse.move(float(value) / 30, 0)
