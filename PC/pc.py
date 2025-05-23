@@ -22,8 +22,8 @@ keyboard = pynput.keyboard.Controller()
 # You can modify the event-key mapping here
 keyboard_mapping = {"P": Key.space, "E": 'w', "C": 's', "F": 'a', "D": 'd'}
 
-offsetx = None
-offsety = None
+offsetx = -12 / 60
+offsety = -8 / 60
 
 with serial.Serial(serial_port, 115200) as port:
     while True:
@@ -32,7 +32,7 @@ with serial.Serial(serial_port, 115200) as port:
         try:
             # Read the line
             line = port.readline().decode('ascii').strip()
-            print(line)
+            print(repr(line))
             line = line.split(':', 1)
             if len(line) != 2:
                 continue
@@ -45,14 +45,14 @@ with serial.Serial(serial_port, 115200) as port:
                     offsety = float(y) / 60
                 mouse.move(float(x) / 60 - offsetx, float(y) / 60 - offsety)
             # mouse x
-            if option == "x":
-                mouse.move(float(value) / 30, 0)
+            elif option == "x":
+                mouse.move(float(value) / 20, 0)
             # mouse y
             elif option == "y":
-                mouse.move(0, float(value) / 30)
+                mouse.move(0, float(value) / 20)
             # mouse clicks
             elif option in "AB":
-                print(line)
+                #print(line)
                 if option == "A":
                     button = Button.left
                 else:
@@ -63,7 +63,7 @@ with serial.Serial(serial_port, 115200) as port:
                     mouse.press(button)
             # key presses
             elif option in "CDEFP":
-                print(line)
+                #print(line)
                 if int(value):
                     keyboard.press(keyboard_mapping[option])
                 else:
