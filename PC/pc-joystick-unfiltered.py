@@ -1,3 +1,4 @@
+import re
 import serial
 import time
 import glob
@@ -34,45 +35,43 @@ if len(serial_port) != 1:
 else:
     serial_port = serial_port[0]
 
-with serial.Serial(serial_port, 115200) as port:
+with serial.Serial(serial_port, 115200, timeout=1) as port:
+    buffer = ""
     while True:
-        lines = port.readline().decode('ascii').strip()
-        for line in lines.splitlines():
+        # Read all available characters
+        data = port.read(port.in_waiting or 1).decode('ascii', errors='ignore')
+        buffer += data
+
+        # Split into lines if newline exists
+        while '\n' in buffer or '\r' in buffer:
+            #time.sleep(0.5)
+            line, buffer = re.split(r'[\r\n]', buffer, 1)  # First full line, rest stays in buffer
+            #print(f"-- {repr(line)}")
+            line = line.strip()
+            if not line:
+                continue
             try:
                 #print(repr(line))
-                line = line.strip().split(':', 1)
-                if len(line) != 2:
-                    continue
-                option, value = line
+                option, value = line.split(':', 1)
                 val = float(value)
 
                 if option == "x":
-                    if val < 256 and val > -256:
+                    if -256 < val < 256:
                         ui.write(e.EV_ABS, e.ABS_X, int(257 * val - 32767))
                     else:
                         print(f"Ignoring x:{val}")
-                    #if 100 < filtered < 150:
-                    #    ui.write(e.EV_ABS, e.ABS_X, 0)
-                    #else:
-                    #    ui.write(e.EV_ABS, e.ABS_X, min(32767, max(-32767, 257 * int(filtered) - 32767)))
                 elif option == "y":
-                    if val < 256 and val > -256:
-                        ui.write(e.EV_ABS, e.ABS_Y, min(32767, max(-32767, int(257 * val - 32767))))
-                        print(f"{val}    -- {line}")
+                    if -256 < val < 256:
+                        ui.write(e.EV_ABS, e.ABS_Y, int(257 * val - 32767))
                     else:
                         print(f"Ignoring y:{val}")
-                    #if 100 < filtered < 150:
-                    #    ui.write(e.EV_ABS, e.ABS_Y, 0)
-                    #else:
-                    #    ui.write(e.EV_ABS, e.ABS_Y, min(32767, max(-32767, 257 * int(filtered) - 32767)))
                 elif option == "A":
-                    ui.write(e.EV_KEY, e.BTN_A, int(value))
+                    ui.write(e.EV_KEY, e.BTN_A, int(val))
                 elif option == "B":
-                    ui.write(e.EV_KEY, e.BTN_B, int(value))
+                    ui.write(e.EV_KEY, e.BTN_B, int(val))
                 else:
                     print(f"Ignoring {line}")
-                    continue
                 ui.syn()
             except Exception as exc:
-                print("Error:", exc)
-
+                print("Error parsing line:", line)
+                print("Exception:", exc)
