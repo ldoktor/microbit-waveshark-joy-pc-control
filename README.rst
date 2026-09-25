@@ -37,8 +37,8 @@ Simple version
 More reliable version
 ---------------------
 
-Use [PC/microbit_safer.py](PC/microbit_safer.py) or
-[PC/microbit_safer_calibrate.py](PC/microbit_safer_calibrate.py) on microbit
+Use [MicroPython/microbit_safer.py](MicroPython/microbit_safer.py) or
+[MicroPython/microbit_safer_calibrate.py](MicroPython/microbit_safer_calibrate.py) on microbit
 and [PC/pc_uinput.py](PC/pc_uinput.py) or
 [PC/pc_uinput_filtered.py](PC/pc_uinput_filtered.py). Those use a simple
 checksum to prevent transfer corruptions and greatly improve the accuracy.
